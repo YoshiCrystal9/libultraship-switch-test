@@ -197,6 +197,9 @@ target_link_libraries(libultraship PUBLIC nlohmann_json::nlohmann_json)
 find_package(tinyxml2 REQUIRED)
 target_link_libraries(libultraship PUBLIC tinyxml2::tinyxml2)
 
+find_package(spdlog QUIET)
+target_link_libraries(libultraship PUBLIC spdlog::spdlog)
+
 if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(THREADS_PREFER_PTHREAD_FLAG ON)
     find_package(Threads REQUIRED)
