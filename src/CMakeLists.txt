@@ -191,12 +191,8 @@ target_link_libraries(libultraship PUBLIC nlohmann_json::nlohmann_json)
 find_package(tinyxml2 REQUIRED)
 target_link_libraries(libultraship PUBLIC tinyxml2::tinyxml2)
 
-find_package(spdlog QUIET)
-
-if (spdlog_FOUND)
-    target_link_libraries(libultraship PUBLIC spdlog::spdlog)
-    target_compile_definitions(libultraship PRIVATE USE_SPDLOG)
-endif()
+find_package(spdlog REQUIRED)
+target_link_libraries(libultraship PUBLIC spdlog::spdlog)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(THREADS_PREFER_PTHREAD_FLAG ON)
@@ -246,6 +242,8 @@ if (CMAKE_SYSTEM_NAME STREQUAL "iOS")
     target_compile_definitions(libultraship PRIVATE
         $<$<CONFIG:Debug>:_DEBUG>
         $<$<NOT:$<CONFIG:Debug>>:NDEBUG>
+        $<$<CONFIG:Debug>:SPDLOG_ACTIVE_LEVEL=0>
+        $<$<NOT:$<CONFIG:Debug>>:SPDLOG_ACTIVE_LEVEL=1>
         __IOS__
     )
 
@@ -274,6 +272,8 @@ else()
         ENABLE_OPENGL
         $<$<CONFIG:Debug>:_DEBUG>
         $<$<NOT:$<CONFIG:Debug>>:NDEBUG>
+        $<$<CONFIG:Debug>:SPDLOG_ACTIVE_LEVEL=0>
+        $<$<NOT:$<CONFIG:Debug>>:SPDLOG_ACTIVE_LEVEL=1>
         $<$<BOOL:${USE_OPENGLES}>:USE_OPENGLES>
         $<$<BOOL:${GFX_DEBUG_DISASSEMBLER}>:GFX_DEBUG_DISASSEMBLER>
     )
