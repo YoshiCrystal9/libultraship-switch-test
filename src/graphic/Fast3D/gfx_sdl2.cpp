@@ -19,6 +19,11 @@
 #elif __APPLE__
 #include <SDL.h>
 #include "gfx_metal.h"
+#elif __SWITCH__
+#include <SDL2/SDL.h>
+#include <switch.h>
+#include <glad/glad.h>
+#include "port/switch/SwitchImpl.h"
 #else
 #include <SDL2/SDL.h>
 #define GL_GLEXT_PROTOTYPES 1
@@ -342,6 +347,10 @@ static void gfx_sdl_init(const char* game_name, const char* gfx_api_name, bool s
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+#elif defined(__SWITCH__)
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 #endif
 
 #ifdef _WIN32
@@ -355,6 +364,13 @@ static void gfx_sdl_init(const char* game_name, const char* gfx_api_name, bool s
 
     char title[512];
     int len = sprintf(title, "%s (%s)", game_name, gfx_api_name);
+
+#ifdef __SWITCH__
+    // For Switch we need to set the window width before creating the window
+    Ship::Switch::GetDisplaySize(&window_width, &window_height);
+    width = window_width;
+    height = window_height;
+#endif
 
 #ifdef __IOS__
     Uint32 flags = SDL_WINDOW_BORDERLESS | SDL_WINDOW_SHOWN;
@@ -387,13 +403,21 @@ static void gfx_sdl_init(const char* game_name, const char* gfx_api_name, bool s
     }
 
     if (use_opengl) {
+#ifndef __SWITCH__
         SDL_GL_GetDrawableSize(wnd, &window_width, &window_height);
 
         if (start_in_fullscreen) {
             set_fullscreen(true, false);
         }
+#endif
 
         ctx = SDL_GL_CreateContext(wnd);
+
+#ifdef __SWITCH__
+        if (!gladLoadGLLoader(SDL_GL_GetProcAddress)) {
+            printf("Failed to initialize glad\n");
+        }
+#endif
 
         SDL_GL_MakeCurrent(wnd, ctx);
         SDL_GL_SetSwapInterval(vsync_enabled ? 1 : 0);
@@ -571,7 +595,9 @@ static void gfx_sdl_handle_single_event(SDL_Event& event) {
         case SDL_WINDOWEVENT:
             switch (event.window.event) {
                 case SDL_WINDOWEVENT_SIZE_CHANGED:
-#ifdef __APPLE__
+#ifdef __SWITCH__
+                    Ship::Switch::GetDisplaySize(&window_width, &window_height);
+#eldef __APPLE__
                     SDL_GetWindowSize(wnd, &window_width, &window_height);
 #else
                     SDL_GL_GetDrawableSize(wnd, &window_width, &window_height);
@@ -703,7 +729,9 @@ bool gfx_sdl_is_running() {
 
 void gfx_sdl_destroy() {
     // TODO: destroy _any_ resources used by SDL
-
+#ifdef __SWITCH__
+    Ship::Switch::Exit();
+#endif
     SDL_DestroyRenderer(renderer);
     SDL_Quit();
 }
