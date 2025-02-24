@@ -179,7 +179,7 @@ if(NOT EXCLUDE_MPQ_SUPPORT)
 endif()
 
 target_link_libraries(libultraship
-    PUBLIC ImGui
+    PUBLIC ImGui tinyxml2
 )
 
 target_link_libraries(libultraship PRIVATE stb)
@@ -194,14 +194,8 @@ target_link_libraries(libultraship PRIVATE libzip::zip)
 find_package(nlohmann_json REQUIRED)
 target_link_libraries(libultraship PUBLIC nlohmann_json::nlohmann_json)
 
-if (CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
-    find_package(switch-tinyxml2 REQUIRED)
-    set(TINYXML2_TARGET switch-tinyxml2::switch-tinyxml2)
-else()
-    find_package(tinyxml2 REQUIRED)
-    set(TINYXML2_TARGET tinyxml2::tinyxml2)
-endif()
-target_link_libraries(libultraship PUBLIC ${TINYXML2_TARGET})
+find_package(tinyxml2 REQUIRED)
+target_link_libraries(libultraship PUBLIC tinyxml2::tinyxml2)
 
 find_package(spdlog QUIET)
 target_link_libraries(libultraship PUBLIC spdlog::spdlog)
