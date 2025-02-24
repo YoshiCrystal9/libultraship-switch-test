@@ -194,6 +194,7 @@ target_link_libraries(libultraship PRIVATE libzip::zip)
 find_package(nlohmann_json REQUIRED)
 target_link_libraries(libultraship PUBLIC nlohmann_json::nlohmann_json)
 
+set(TinyXML2_DIR "/opt/devkitpro/portlibs/switch/lib/cmake/tinyxml2")
 find_package(tinyxml2 REQUIRED)
 target_link_libraries(libultraship PUBLIC tinyxml2::tinyxml2)
 
