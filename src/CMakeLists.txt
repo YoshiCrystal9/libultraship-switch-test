@@ -194,12 +194,6 @@ target_link_libraries(libultraship PRIVATE libzip::zip)
 find_package(nlohmann_json REQUIRED)
 target_link_libraries(libultraship PUBLIC nlohmann_json::nlohmann_json)
 
-find_package(tinyxml2 QUIET)
-target_link_libraries(libultraship PUBLIC tinyxml2::tinyxml2)
-
-find_package(spdlog QUIET)
-target_link_libraries(libultraship PUBLIC spdlog::spdlog)
-
 if (CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
     set(THREADS_PREFER_PTHREAD_FLAG ON)
     find_package(Threads REQUIRED)
