@@ -179,7 +179,7 @@ if(NOT EXCLUDE_MPQ_SUPPORT)
 endif()
 
 target_link_libraries(libultraship
-    PUBLIC ImGui
+    PUBLIC ImGui tinyxml2
 )
 
 target_link_libraries(libultraship PRIVATE stb)
@@ -194,14 +194,13 @@ target_link_libraries(libultraship PRIVATE libzip::zip)
 find_package(nlohmann_json REQUIRED)
 target_link_libraries(libultraship PUBLIC nlohmann_json::nlohmann_json)
 
-set(TinyXML2_DIR "/opt/devkitpro/portlibs/switch/lib/cmake/tinyxml2")
-find_package(tinyxml2 REQUIRED)
+find_package(tinyxml2 QUIET)
 target_link_libraries(libultraship PUBLIC tinyxml2::tinyxml2)
 
 find_package(spdlog QUIET)
 target_link_libraries(libultraship PUBLIC spdlog::spdlog)
 
-if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+if (CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
     set(THREADS_PREFER_PTHREAD_FLAG ON)
     find_package(Threads REQUIRED)
     target_link_libraries(libultraship PRIVATE Threads::Threads)
