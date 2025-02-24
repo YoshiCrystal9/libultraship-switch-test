@@ -34,6 +34,10 @@ target_sources(ImGui
     ${imgui_SOURCE_DIR}/imgui.cpp
 )
 
+if (CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
+    target_include_directories(ImGui PRIVATE ${DEVKITPRO}/portlibs/switch/include/)
+endif()
+
 target_sources(ImGui
     PRIVATE
     ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
@@ -57,6 +61,9 @@ if(NOT EXCLUDE_MPQ_SUPPORT)
     )
     FetchContent_MakeAvailable(StormLib)
     list(APPEND ADDITIONAL_LIB_INCLUDES ${stormlib_SOURCE_DIR}/src)
+    if (CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
+        target_compile_definitions(StormLib PRIVATE -D_POSIX_C_SOURCE=200809L)
+    endif()
 endif()
 
 #=================== STB ===================
